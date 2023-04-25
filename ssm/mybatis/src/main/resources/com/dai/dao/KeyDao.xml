@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dai.dao.KeyDao">
+
+    <!--多表查询一般都用自定义封装规则-->
+    <select id="getById" resultMap="myKey">
+        select k.id, keyname, l.id lid, lockname
+        from `key` k
+                 left join `lock` l on l.id = k.id
+        where k.id = #{id}
+    </select>
+
+    <!-- <resultMap id="myKey" type="com.dai.entity.Key">
+         <id property="id" column="id"/>
+         <result property="keyName" column="keyname"/>
+         &lt;!&ndash;级联属性&ndash;&gt;
+         <result property="lock.id" column="lid"/>
+         <result property="lock.lockName" column="locakname"/>
+     </resultMap>-->
+
+    <resultMap id="myKey" type="com.dai.entity.Key">
+        <id property="id" column="id"/>
+        <result property="keyName" column="keyname"/>
+        <!--mybatis推荐的-->
+        <association property="lock" javaType="com.dai.entity.Lock">
+            <id property="id" column="lid"/>
+            <result property="lockName" column="lockname"/>
+        </association>
+
+        <!--        更简版
+
+        select=""
+
+        -->
+        <association property="lock" select=""></association>
+
+
+        <!--
+        定义集合元素封装
+            property：指定哪个元素是集合属性
+             ofType:集合内元素类型
+        -->
+        <!--        <collection property="keys" ofType="com.dai.entity.Key"></collection>-->
+    </resultMap>
+
+</mapper>

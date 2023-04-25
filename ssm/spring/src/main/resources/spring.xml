@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+
+    <!--扫描组件-->
+    <context:component-scan base-package="com.djf"/>
+
+    <!--开启基于aop的注解功能-->
+    <aop:aspectj-autoproxy/>
+
+    <!--加载外部配置信息-->
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!-- spring管理数据库连接[默认就是单例的]-->
+    <bean id="source" class="com.alibaba.druid.pool.DruidDataSource"
+    >
+        <property name="username" value="${db.username}"/>
+        <property name="password" value="${db.password}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="driverClassName" value="${db.driverClassName}"/>
+        <property name="initialSize" value="10"/>
+        <property name="maxActive" value="10"/>
+    </bean>
+    <!--事务管理-->
+    <bean id="tm" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 控制住数据源 -->
+        <property name="dataSource" ref="source"/>
+    </bean>
+    <!--开启基于注解的事务控制模式-->
+    <tx:annotation-driven transaction-manager="tm"/>
+
+    <bean id="person1" class="com.djf.spring.Person">
+        <property name="name" value="张三"/>
+    </bean>
+
+    <bean id="person2" class="com.djf.spring.Person">
+        <property name="name" value="李四"/>
+    </bean>
+
+    <bean id="person3" class="com.djf.spring.Person">
+        <constructor-arg name="id" value="1"/>
+        <constructor-arg name="name" value="王五"/>
+    </bean>
+
+    <bean id="person4" class="com.djf.spring.Person"
+          p:id="18" p:name="jack">
+    </bean>
+    <!--使用null值-->
+    <bean id="person5" class="com.djf.spring.Person">
+        <property name="name">
+            <null/>
+        </property>
+    </bean>
+
+    <bean id="person6" class="com.djf.spring.Person">
+        <property name="id" value="1"/>
+        <property name="book" ref="book1"/>
+    </bean>
+    <bean id="book1" class="com.djf.spring.Book">
+        <property name="bookName" value="西游记"/>
+        <property name="bookAuthor" value="吴承恩"/>
+    </bean>
+
+    <bean id="person7" class="com.djf.spring.Person">
+        <property name="book">
+            <!--内部bean :id不能被外部获取-->
+            <bean class="com.djf.spring.Book">
+                <property name="bookName" value="西游记"/>
+                <property name="bookAuthor" value="吴承恩"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!--静态工厂【工厂本身不需new出来】-->
+    <bean id="staticFactory" class="com.djf.factory.StaticFactory" factory-method="getInstance">
+        <!--指定方法参数-->
+        <constructor-arg name="bookName" value="路由及"/>
+    </bean>
+
+    <!--实例工厂
+    factory-bean:指定哪个工厂
+    factory-method: 指定工厂的方法
+    -->
+    <bean id="instanceFactory" class="com.djf.factory.InstanceFactory"/>
+    <bean id="bookFactory" class="com.djf.spring.Book" factory-bean="instanceFactory"
+          factory-method="getInstance">
+        <constructor-arg name="bookName" value="龙昂夫"/>
+    </bean>
+</beans>

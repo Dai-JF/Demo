@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace：接口全类名-->
+<mapper namespace="com.dai.dao.UserDao">
+
+    <!--id:方法名-->
+    <!--让mybatis自动的将【自增】的id赋值给传入的user对象的id值
+            useGeneratedKeys="true"
+            keyProperty="":将刚才自增的id封装给哪个属性
+    -->
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="id">
+        insert into user (name, password, address, phone)
+        VALUES (#{name}, #{password}, #{address}, #{phone})
+    </insert>
+
+    <insert id="addUser2" useGeneratedKeys="true" keyProperty="id">
+        # 获取非自增的id，order="BEFORE"：在核心sql语句前查询
+        # keyProperty="id":将查到的id赋值给javabean的属性
+        <selectKey order="BEFORE" keyProperty="id" resultType="integer">select max(id)+1 from user</selectKey>
+        insert into user (id,name, password, address, phone)
+        VALUES (#{id},#{name}, #{password}, #{address}, #{phone})
+    </insert>
+
+    <update id="updateUser">
+        update user
+        set address=#{address},
+            password=#{password}
+        where id = #{id}
+    </update>
+
+
+    <delete id="deleteUser">
+        delete
+        from user
+        where id = #{id}
+    </delete>
+
+
+    <!--查询操作必须写 resultType, 增删改不用写 resultType
+        #{属性名} ：表示传递过来的参数值【从传入的参数对象中取出对应属性的值】
+    -->
+    <select id="getUserById" resultType="com.dai.entity.User">
+        select *
+        from user
+        where id = #{id}
+    </select>
+
+    <!-- 查询多个，resultType写集合内的元素类型->-->
+    <select id="getAll" resultType="com.dai.entity.User">
+        select *
+        from user
+    </select>
+
+    <!--查询一条记录封装map 单条记录自动封装map，resultType写map没事-->
+    <select id="returnMap" resultType="java.util.Map">
+        select *
+        from user
+        where id = #{id}
+    </select>
+    <!--查询多条记录封装map 多条记录的resultType一定写集合内的元素类型
+        resultType是Map :报错：java.lang.ClassCastException: java.util.HashMap cannot be cast to com.dai.entity.User
+    查询多条记录时：resultType写集合内的元素类型
+    -->
+    <select id="maps" resultType="com.dai.entity.User">
+        select *
+        from user
+    </select>
+
+
+</mapper>

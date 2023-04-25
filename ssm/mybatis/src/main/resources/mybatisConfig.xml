@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--引用外部文件 resource：从类路径开始引用url:引用磁盘路径或网络路径的资源-->
+    <properties resource="db.properties"/>
+
+    <!--是否开启驼峰命名自动映射，即从经典数据库列名 A_COLUMN 映射到经典 Java 属性名 aColumn。
+        login_account====>loginAccount-->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    <!--之后的数据源和事务管理都用spring-->
+    <environments default="mysql">
+        <environment id="mysql">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!--需要使用mappers注册写好的sql映射文件-->
+    <mappers>
+        <!--resource：从类路径开始引用url:引用磁盘路径或网络路径的资源
+        class:1、引用接口全类名【且xml要和接口同目录，同名称】2、直接在接口上写注解版sql语句-->
+        <!--<mapper resource="com/dai/mapper/UserDao.xml"/>-->
+        <!--<mapper class="com.dai.dao.UserDaoAnnotation"/>-->
+
+
+        <!--批量注册 name:dao所在包名
+        [映射文件和dao接口的包结构必须一样]-->
+        <package name="com.dai.dao"/>
+    </mappers>
+</configuration>

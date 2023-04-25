@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dai.dao.TableDao">
+
+
+    <!--<select id="getTable" resultType="com.dai.entity.Table">
+        &#45;&#45; 属性名和字段名不同处理方式 1、其别名
+        select id, t_name name, t_age age
+        from test
+        where id = #{id}
+    </select>-->
+
+
+    <!--  resultType="com.dai.entity.Table:   这是使用默认的规则
+            resultMap="my" :                   使用自定义规则
+    -->
+
+    <select id="getTable" resultMap="my">
+        select *
+        from test
+        where id = #{id}
+    </select>
+
+    <!-- 自定义结果集：自定义每列数据和JavaBean的映射规则
+        id ：唯一标识，让其被引用
+        type:指定要自定义封装的javaBean 全类名
+
+        id      t_name      t_age
+        1       tom         12
+
+    -->
+    <resultMap id="my" type="com.dai.entity.Table">
+        <!--指定主键列的对应规则
+        column="id" 指定那一列是主键列
+        property="id" 指定table的哪个属性封装id这一列数据
+        -->
+        <id property="id" column="id"/>
+
+        <!--普通列-->
+        <result property="age" column="t_age"/>
+        <result property="name" column="t_name"/>
+    </resultMap>
+</mapper>
